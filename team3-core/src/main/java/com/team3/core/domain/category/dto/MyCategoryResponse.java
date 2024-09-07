@@ -12,9 +12,17 @@ public class MyCategoryResponse {
     private boolean isSelected;
 
     @Builder
-    public MyCategoryResponse(CategoryLevel categoryLevel) {
-        this.categoryId = categoryLevel.getCategory().getId();
-        this.categoryName = categoryLevel.getCategory().getName();
-        this.isSelected = categoryLevel.isSelected();
+    public MyCategoryResponse(Long categoryId, String categoryName, boolean isSelected) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.isSelected = isSelected;
+    }
+
+    public static MyCategoryResponse from(CategoryLevel categoryLevel) {
+        return MyCategoryResponse.builder()
+                .categoryId(categoryLevel.getCategory().getId())
+                .categoryName(categoryLevel.getCategory().getName())
+                .isSelected(categoryLevel.isSelected())
+                .build();
     }
 }

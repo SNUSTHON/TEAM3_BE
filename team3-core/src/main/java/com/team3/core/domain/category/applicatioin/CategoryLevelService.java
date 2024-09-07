@@ -29,7 +29,7 @@ public class CategoryLevelService {
         List<CategoryLevel> categoryLevels = getCategoryLevels(userId);
 
         return categoryLevels.stream()
-                .map(MyCategoryResponse::new)
+                .map(MyCategoryResponse::from)
                 .collect(Collectors.toList());
     }
 
