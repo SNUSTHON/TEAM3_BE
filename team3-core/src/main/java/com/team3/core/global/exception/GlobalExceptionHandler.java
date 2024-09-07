@@ -14,6 +14,13 @@ import static com.team3.core.global.exception.ErrorCode.INTERNAL_SERVER_ERROR;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(MemberException.class)
+    public ResponseEntity<StandardResponse> handleMemberException(MemberException e) {
+        log.warn(e.getMessage(), e);
+
+        return ResponseEntity.status(e.getStatus()).body(StandardResponse.failure(e.getCode(), e.getMessage()));
+    }
+
     // @Valid exception
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<StandardResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
