@@ -11,10 +11,9 @@ import com.team3.core.domain.challenge.dto.response.MyTodayChallengesResponse;
 import com.team3.core.domain.challenge.dto.response.RangeChallengeResponse;
 import com.team3.core.domain.member.dao.MemberRepository;
 import com.team3.core.domain.member.domain.Member;
-import com.team3.core.global.exception.CategoryLevelException;
-import com.team3.core.global.exception.ErrorCode;
-import com.team3.core.global.exception.MemberChallengeException;
-import com.team3.core.global.exception.MemberException;
+import com.team3.core.domain.sponsor.dao.SponsorRepository;
+import com.team3.core.domain.sponsor.domain.Sponsor;
+import com.team3.core.global.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.team3.core.global.common.Constants.SPONSOR_AMOUNT;
 import static com.team3.core.global.common.Constants.SPONSOR_PROGRESS_INCREASE_RATE;
 
 @Service
@@ -36,6 +36,7 @@ public class MyChallengeService {
     private final MemberChallengeQueryRepository memberChallengeQueryRepository;
     private final CategoryLevelRepository categoryLevelRepository;
     private final MemberRepository memberRepository;
+    private final SponsorRepository sponsorRepository;
 
     @Transactional(readOnly = true)
     public List<MyTodayChallengesResponse> getMyTodayChallenges(Long memberId) {
@@ -84,7 +85,13 @@ public class MyChallengeService {
             boolean isFull = findMember.increaseSponsorProgressAndCheckIsFull(SPONSOR_PROGRESS_INCREASE_RATE);
 
             if (isFull) {
-                // TODO: 후원 객체 생성
+                Sponsor sponsor = Sponsor.builder()
+                        .amount(SPONSOR_AMOUNT)
+                        .institution("SNUSTHON")
+                        .member(findMember)
+                        .build();
+
+                sponsorRepository.save(sponsor);
             }
 
         } else { // 보상 지급 철회
@@ -97,6 +104,10 @@ public class MyChallengeService {
             // 후원 객체 생성되었던 경우, 삭제
             if (isCanceled) {
                 // TODO: 마지막으로 생성된 후원 객체 삭제
+                Sponsor mostRecentSponsor = sponsorRepository.findMostRecent()
+                        .orElseThrow(() -> new SponsorException(ErrorCode.SPONSOR_NOT_FOUND));
+
+                sponsorRepository.delete(mostRecentSponsor);
             }
         }
 
