@@ -9,7 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
-@Table(name = "ctlevel")
+import static com.team3.core.global.common.Constants.MAX_CNT;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,11 +28,11 @@ public class CategoryLevel extends BaseEntity {
     private boolean isSelected = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
     @Builder
@@ -45,5 +46,23 @@ public class CategoryLevel extends BaseEntity {
 
     public void changeSelected(boolean isSelected) {
         this.isSelected = isSelected;
+    }
+
+    public void plusCnt() {
+        this.cnt++;
+
+        if (cnt >= MAX_CNT) {
+            this.level++;
+            this.cnt = 0;
+        }
+    }
+
+    public void minusCnt() {
+        if (cnt <= 0) {
+            this.level--;
+            this.cnt = MAX_CNT - 1;
+        } else {
+            this.cnt--;
+        }
     }
 }

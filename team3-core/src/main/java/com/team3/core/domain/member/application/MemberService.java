@@ -6,16 +6,11 @@ import com.team3.core.domain.category.domain.Category;
 import com.team3.core.domain.category.domain.CategoryLevel;
 import com.team3.core.domain.member.dao.MemberRepository;
 import com.team3.core.domain.member.domain.Member;
-import com.team3.core.domain.member.dto.MemberInfoResponse;
 import com.team3.core.global.auth.model.OAuth2Provider;
 import com.team3.core.global.auth.model.OAuth2ProviderUser;
 import com.team3.core.global.auth.model.Role;
-import com.team3.core.global.exception.ErrorCode;
 import com.team3.core.global.exception.MemberException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aot.hint.MemberCategory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +18,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.team3.core.global.exception.ErrorCode.*;
+import static com.team3.core.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
-    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryLevelRepository categoryLevelRepository;
@@ -88,7 +80,7 @@ public class MemberService {
 
         return savedMember;
     }
-    
+
     public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
