@@ -1,1 +1,4 @@
 rootProject.name = 'team3'
+
+include 'team3-core'
+include 'team3-batch'

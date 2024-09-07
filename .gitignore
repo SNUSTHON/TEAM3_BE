@@ -38,3 +38,4 @@ out/
 
 ### ADDITIONAL ###
 application*.yml
+/team3-core/src/main/generated/
