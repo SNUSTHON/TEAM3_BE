@@ -117,7 +117,7 @@ class MyChallengeServiceTest {
         CategoryLevel findCategoryLevel = categoryLevelRepository.findByMemberIdAndCategoryId(member.getId(), memberChallenge.getChallenge().getCategory().getId()).get();
         MemberChallenge findMemberChallenge = memberChallengeRepository.findById(memberChallenge.getId()).get();
         assertThat(findMemberChallenge.isDone()).isTrue();
-        assertThat(member.getSponsor_progress()).isEqualTo(0.1);
+        assertThat(member.getSponsorProgress()).isEqualTo(0.1);
         assertThat(findCategoryLevel.getLevel()).isEqualTo(1);
         assertThat(findCategoryLevel.getCnt()).isEqualTo(1);
     }
@@ -153,7 +153,7 @@ class MyChallengeServiceTest {
         CategoryLevel findCategoryLevel = categoryLevelRepository.findByMemberIdAndCategoryId(member.getId(), memberChallenge.getChallenge().getCategory().getId()).get();
         MemberChallenge findMemberChallenge = memberChallengeRepository.findById(memberChallenge.getId()).get();
         assertThat(findMemberChallenge.isDone()).isFalse();
-        assertThat(member.getSponsor_progress()).isEqualTo(0);
+        assertThat(member.getSponsorProgress()).isEqualTo(0);
         assertThat(findCategoryLevel.getLevel()).isEqualTo(1);
         assertThat(findCategoryLevel.getCnt()).isEqualTo(0);
     }

@@ -40,7 +40,7 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private double sponsor_progress = 0;
+    private double sponsorProgress = 0;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberChallenge> memberChallenges = new ArrayList<>();
@@ -56,9 +56,9 @@ public class Member extends BaseEntity {
     }
 
     public boolean increaseSponsorProgressAndCheckIsFull(double value) {
-        this.sponsor_progress += value;
+        this.sponsorProgress += value;
 
-        if (sponsor_progress >= MAX_SPONSOR_PROGRESS) {
+        if (sponsorProgress >= MAX_SPONSOR_PROGRESS) {
             resetSponsorProgress();
             return true;
         }
@@ -67,18 +67,18 @@ public class Member extends BaseEntity {
     }
 
     public boolean decreaseSponsorProgressAndCheckIsCanceled(double value) {
-        double diff = value - this.sponsor_progress;
+        double diff = value - this.sponsorProgress;
         if (diff > 0) {
-            this.sponsor_progress = MAX_SPONSOR_PROGRESS - diff;
+            this.sponsorProgress = MAX_SPONSOR_PROGRESS - diff;
             return true;
         } else {
-            this.sponsor_progress -= value;
+            this.sponsorProgress -= value;
             return false;
         }
     }
 
     public void resetSponsorProgress() {
-        this.sponsor_progress = 0;
+        this.sponsorProgress = 0;
     }
 
     /* 연관관계 메서드 */
