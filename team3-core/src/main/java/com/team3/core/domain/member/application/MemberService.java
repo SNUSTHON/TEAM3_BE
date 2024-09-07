@@ -38,4 +38,8 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("우저 정보를 찾을 수 없습니다"));
+    }
 }
