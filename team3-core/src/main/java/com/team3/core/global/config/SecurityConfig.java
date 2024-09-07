@@ -1,6 +1,9 @@
 package com.team3.core.global.config;
 
 import com.team3.core.global.auth.application.Team3OAuth2UserService;
+import com.team3.core.global.auth.filter.JwtExceptionFilter;
+import com.team3.core.global.auth.filter.JwtVerificationFilter;
+import com.team3.core.global.auth.handler.JwtAccessDeniedHandler;
 import com.team3.core.global.auth.handler.OAuth2EntryPoint;
 import com.team3.core.global.auth.handler.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.security.config.annotation.web.configurers.FormLoginC
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -32,6 +36,9 @@ public class SecurityConfig {
     private final Team3OAuth2UserService team3OAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2EntryPoint oAuth2EntryPoint;
+    private final JwtVerificationFilter jwtVerificationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -70,9 +77,12 @@ public class SecurityConfig {
                                 )
                                 .successHandler(oAuth2LoginSuccessHandler)
                 )
-                .exceptionHandling(exceptionHandling -> {
-                    exceptionHandling.authenticationEntryPoint(oAuth2EntryPoint);
-                });
+                .addFilterBefore(jwtVerificationFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint(oAuth2EntryPoint)
+                                .accessDeniedHandler(jwtAccessDeniedHandler));
 
         return http.build();
     }
