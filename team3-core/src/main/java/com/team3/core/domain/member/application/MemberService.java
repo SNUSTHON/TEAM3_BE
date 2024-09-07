@@ -2,12 +2,17 @@ package com.team3.core.domain.member.application;
 
 import com.team3.core.domain.member.dao.MemberRepository;
 import com.team3.core.domain.member.domain.Member;
+import com.team3.core.domain.member.dto.MemberInfoResponse;
 import com.team3.core.global.auth.model.OAuth2Provider;
 import com.team3.core.global.auth.model.OAuth2ProviderUser;
 import com.team3.core.global.auth.model.Role;
+import com.team3.core.global.exception.ErrorCode;
+import com.team3.core.global.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.team3.core.global.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -37,9 +42,9 @@ public class MemberService {
 
         return memberRepository.save(member);
     }
-
+    
     public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("우저 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
 }
