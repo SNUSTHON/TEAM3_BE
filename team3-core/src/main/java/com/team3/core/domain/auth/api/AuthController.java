@@ -25,6 +25,7 @@ import java.util.List;
 public class AuthController {
 
     @GetMapping
+    public StandardResponse<UserInfo> getUserInfo(
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -40,7 +41,7 @@ public class AuthController {
     public UserInfoDto getUserInfo(
             @AuthenticationPrincipal Team3OAuth2User team3OAuth2User
     ) {
-        UserInfoDto userInfo = UserInfoDto.from(team3OAuth2User.getMember());
-        return userInfo;
+        UserInfo userInfo = UserInfo.from(team3OAuth2User.getMember());
+        return StandardResponse.success(userInfo);
     }
 }

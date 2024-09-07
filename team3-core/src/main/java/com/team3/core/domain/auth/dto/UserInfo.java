@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class UserInfoDto {
+public class UserInfo {
 
     private Long id;
     private String email;
@@ -13,15 +13,15 @@ public class UserInfoDto {
     private String profileImage;
 
     @Builder
-    public UserInfoDto(Long id, String email, String username, String profileImage) {
+    public UserInfo(Long id, String email, String username, String profileImage) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.profileImage = profileImage;
     }
 
-    public static UserInfoDto from(Member member) {
-        return UserInfoDto.builder()
+    public static UserInfo from(Member member) {
+        return UserInfo.builder()
                 .id(member.getId())
                 .email(member.getEmail())
                 .username(member.getUsername())

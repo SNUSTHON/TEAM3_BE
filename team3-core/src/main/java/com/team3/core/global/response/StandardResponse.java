@@ -16,7 +16,7 @@ public class StandardResponse<T> {
 
     private int code;
     private String message;
-    private T content;
+    private T data;
 
     public static <T> StandardResponse<T> success(String message) {
         return StandardResponse.<T>builder()
@@ -29,7 +29,7 @@ public class StandardResponse<T> {
         return StandardResponse.<T>builder()
                 .code(HttpStatus.OK.value())
                 .message("API 요청 성공")
-                .content(content)
+                .data(content)
                 .build();
     }
 
@@ -37,7 +37,7 @@ public class StandardResponse<T> {
         return StandardResponse.<T>builder()
                 .code(HttpStatus.OK.value())
                 .message(message)
-                .content(content)
+                .data(content)
                 .build();
     }
 
@@ -45,7 +45,7 @@ public class StandardResponse<T> {
         return StandardResponse.<T>builder()
                 .code(code)
                 .message(message)
-                .content(null)
+                .data(null)
                 .build();
     }
 
@@ -53,7 +53,7 @@ public class StandardResponse<T> {
         return StandardResponse.<T>builder()
                 .code(code)
                 .message(message)
-                .content(content)
+                .data(content)
                 .build();
     }
 }

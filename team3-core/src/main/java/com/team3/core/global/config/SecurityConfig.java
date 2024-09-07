@@ -66,8 +66,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> {
                     authz.requestMatchers("/").permitAll();
                     authz.requestMatchers("/swagger-ui/**"
-                     , "/swagger-resources/**"
-                     , "/v3/api-docs/**").permitAll();
+                            , "/swagger-resources/**"
+                            , "/v3/api-docs/**").permitAll();
                     authz.requestMatchers(PathRequest.toH2Console()).permitAll();
                     authz.anyRequest().authenticated();
                 })
@@ -92,7 +92,7 @@ public class SecurityConfig {
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

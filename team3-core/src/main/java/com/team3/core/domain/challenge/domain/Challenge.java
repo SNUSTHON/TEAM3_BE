@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -21,7 +22,8 @@ public class Challenge extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private int level;
+    @ColumnDefault("1")
+    private int level = 1;
 
     @Column(nullable = false)
     private int duration;
