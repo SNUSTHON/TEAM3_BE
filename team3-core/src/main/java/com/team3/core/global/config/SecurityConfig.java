@@ -65,7 +65,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz -> {
                     authz.requestMatchers("/").permitAll();
-                    authz.requestMatchers("/swagger-ui/index.html").permitAll();
+                    authz.requestMatchers("/swagger-ui/**"
+                     , "/swagger-resources/**"
+                     , "/v3/api-docs/**").permitAll();
                     authz.requestMatchers(PathRequest.toH2Console()).permitAll();
                     authz.anyRequest().authenticated();
                 })
