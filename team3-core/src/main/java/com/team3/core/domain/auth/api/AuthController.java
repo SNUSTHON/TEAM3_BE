@@ -1,7 +1,6 @@
 package com.team3.core.domain.auth.api;
 
-import com.team3.core.domain.auth.dto.UserInfoDto;
-import com.team3.core.domain.category.dto.MyCategoryResponse;
+import com.team3.core.domain.auth.dto.UserInfo;
 import com.team3.core.global.auth.model.Team3OAuth2User;
 import com.team3.core.global.config.SwaggerConfig;
 import com.team3.core.global.response.StandardResponse;
@@ -26,19 +25,6 @@ public class AuthController {
 
     @GetMapping
     public StandardResponse<UserInfo> getUserInfo(
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "나의 정보 조회 성공",
-                            useReturnTypeSchema = true
-                    )
-            }
-    )
-    @Operation(summary = "나의 정보 조회", description = "나의 정보 조회 API입니다.",
-            security = @SecurityRequirement(name = SwaggerConfig.JWT_SECURITY_SCHEME)
-    )
-    public UserInfoDto getUserInfo(
             @AuthenticationPrincipal Team3OAuth2User team3OAuth2User
     ) {
         UserInfo userInfo = UserInfo.from(team3OAuth2User.getMember());
