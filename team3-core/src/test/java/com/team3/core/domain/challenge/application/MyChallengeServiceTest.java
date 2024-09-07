@@ -13,6 +13,8 @@ import com.team3.core.domain.challenge.dto.response.MyTodayChallengesResponse;
 import com.team3.core.domain.challenge.dto.response.RangeChallengeResponse;
 import com.team3.core.domain.member.dao.MemberRepository;
 import com.team3.core.domain.member.domain.Member;
+import com.team3.core.domain.sponsor.dao.SponsorRepository;
+import com.team3.core.domain.sponsor.domain.Sponsor;
 import com.team3.core.global.auth.model.OAuth2Provider;
 import com.team3.core.global.auth.model.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.team3.core.global.common.Constants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
@@ -54,6 +57,9 @@ class MyChallengeServiceTest {
 
     @Autowired
     MemberChallengeRepository memberChallengeRepository;
+
+    @Autowired
+    SponsorRepository sponsorRepository;
 
     List<Category> categories;
 
@@ -123,6 +129,42 @@ class MyChallengeServiceTest {
     }
 
     @Test
+    @DisplayName("updateStatus_true_with_sponsor")
+    void updateStatus_true_with_sponsor() {
+        // given
+        Member member = createMember();
+
+        List<Challenge> challenges = createChallengesByCategories(1, categories.get(0));
+        MemberChallenge memberChallenge = MemberChallenge.builder()
+                .challenge(challenges.get(0))
+                .member(member)
+                .build();
+        memberChallengeRepository.save(memberChallenge);
+        member.increaseSponsorProgressAndCheckIsFull(MAX_SPONSOR_PROGRESS - SPONSOR_PROGRESS_INCREASE_RATE);
+
+        CategoryLevel categoryLevel = CategoryLevel.builder()
+                .cnt(0)
+                .level(1)
+                .member(member)
+                .category(categories.get(0))
+                .isSelected(true)
+                .build();
+        categoryLevelRepository.save(categoryLevel);
+
+        // when
+        myChallengeService.updateStatus(member.getId(), memberChallenge.getId(), true);
+
+        // then
+        CategoryLevel findCategoryLevel = categoryLevelRepository.findByMemberIdAndCategoryId(member.getId(), memberChallenge.getChallenge().getCategory().getId()).get();
+        MemberChallenge findMemberChallenge = memberChallengeRepository.findById(memberChallenge.getId()).get();
+        assertThat(findMemberChallenge.isDone()).isTrue();
+        assertThat(member.getSponsorProgress()).isEqualTo(0.0);
+        assertThat(findCategoryLevel.getLevel()).isEqualTo(1);
+        assertThat(findCategoryLevel.getCnt()).isEqualTo(1);
+        assertThat(sponsorRepository.findMostRecent()).isNotEmpty();
+    }
+
+    @Test
     @DisplayName("updateStatus_false")
     void updateStatus_false() {
         // given
@@ -156,6 +198,49 @@ class MyChallengeServiceTest {
         assertThat(member.getSponsorProgress()).isEqualTo(0);
         assertThat(findCategoryLevel.getLevel()).isEqualTo(1);
         assertThat(findCategoryLevel.getCnt()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("updateStatus_false_with_canceled_sponsor")
+    void updateStatus_false_with_canceled_sponsor() {
+        // given
+        Member member = createMember();
+
+        List<Challenge> challenges = createChallengesByCategories(1, categories.get(0));
+        MemberChallenge memberChallenge = MemberChallenge.builder()
+                .challenge(challenges.get(0))
+                .member(member)
+                .build();
+        memberChallengeRepository.save(memberChallenge);
+
+        CategoryLevel categoryLevel = CategoryLevel.builder()
+                .cnt(0)
+                .level(1)
+                .member(member)
+                .category(categories.get(0))
+                .isSelected(true)
+                .build();
+        categoryLevelRepository.save(categoryLevel);
+
+        Sponsor sponsor = Sponsor.builder()
+                .amount(SPONSOR_AMOUNT)
+                .institution("SNUSTHON")
+                .member(member)
+                .build();
+        sponsorRepository.save(sponsor);
+        categoryLevel.plusCnt();
+
+        // when
+        myChallengeService.updateStatus(member.getId(), memberChallenge.getId(), false);
+
+        // then
+        CategoryLevel findCategoryLevel = categoryLevelRepository.findByMemberIdAndCategoryId(member.getId(), memberChallenge.getChallenge().getCategory().getId()).get();
+        MemberChallenge findMemberChallenge = memberChallengeRepository.findById(memberChallenge.getId()).get();
+        assertThat(findMemberChallenge.isDone()).isFalse();
+        assertThat(member.getSponsorProgress()).isEqualTo(MAX_SPONSOR_PROGRESS - SPONSOR_PROGRESS_INCREASE_RATE);
+        assertThat(findCategoryLevel.getLevel()).isEqualTo(1);
+        assertThat(findCategoryLevel.getCnt()).isEqualTo(0);
+        assertThat(sponsorRepository.findMostRecent()).isEmpty();
     }
 
     @Test

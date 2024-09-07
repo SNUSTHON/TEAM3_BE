@@ -12,4 +12,7 @@ public interface Constants {
     double MAX_SPONSOR_PROGRESS = 100.0;
     double SPONSOR_PROGRESS_INCREASE_RATE = 0.1;
 
+    // Sponsor
+    Long SPONSOR_AMOUNT = 100000L;
+
 }
