@@ -18,6 +18,13 @@ public class StandardResponse<T> {
     private String message;
     private T content;
 
+    public static <T> StandardResponse<T> success(String message) {
+        return StandardResponse.<T>builder()
+                .code(HttpStatus.OK.value())
+                .message(message)
+                .build();
+    }
+
     public static <T> StandardResponse<T> success(T content) {
         return StandardResponse.<T>builder()
                 .code(HttpStatus.OK.value())
