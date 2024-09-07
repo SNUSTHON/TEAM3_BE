@@ -1,20 +1,42 @@
 package com.team3.core.domain.member.application;
 
+import com.team3.core.domain.category.dao.CategoryLevelRepository;
+import com.team3.core.domain.category.dao.CategoryRepository;
+import com.team3.core.domain.category.domain.Category;
+import com.team3.core.domain.category.domain.CategoryLevel;
 import com.team3.core.domain.member.dao.MemberRepository;
 import com.team3.core.domain.member.domain.Member;
+import com.team3.core.domain.member.dto.MemberInfoResponse;
 import com.team3.core.global.auth.model.OAuth2Provider;
 import com.team3.core.global.auth.model.OAuth2ProviderUser;
 import com.team3.core.global.auth.model.Role;
+import com.team3.core.global.exception.ErrorCode;
+import com.team3.core.global.exception.MemberException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.team3.core.global.exception.ErrorCode.*;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
+    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     private final MemberRepository memberRepository;
+    private final CategoryRepository categoryRepository;
+    private final CategoryLevelRepository categoryLevelRepository;
 
     public Member createOrUpdate(OAuth2ProviderUser oAuth2ProviderUser) {
         return memberRepository.findByEmail(oAuth2ProviderUser.getEmail())
@@ -35,11 +57,40 @@ public class MemberService {
                 .role(role)
                 .build();
 
-        return memberRepository.save(member);
-    }
 
+        Member savedMember = memberRepository.save(member);
+
+        List<Category> categories = categoryRepository.findAll();
+
+        Random random = new Random();
+
+        Set<Integer> uniqueIntegers = new HashSet<>();
+
+        // 중복되지 않는 랜덤한 정수 3개 생성
+        while (uniqueIntegers.size() < 3) {
+            int randomInt = random.nextInt(1, categories.size() + 1);
+            uniqueIntegers.add(randomInt);
+        }
+
+        for (int i = 0; i < categories.size(); i++) {
+            boolean isSelected = uniqueIntegers.contains(i + 1);
+
+            CategoryLevel categoryLevel = CategoryLevel.builder()
+                    .member(savedMember)
+                    .category(categories.get(i))
+                    .level(1)
+                    .isSelected(isSelected)
+                    .cnt(0)
+                    .build();
+
+            categoryLevelRepository.save(categoryLevel);
+        }
+
+        return savedMember;
+    }
+    
     public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("우저 정보를 찾을 수 없습니다"));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
 }
