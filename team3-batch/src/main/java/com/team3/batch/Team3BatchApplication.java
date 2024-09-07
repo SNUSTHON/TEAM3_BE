@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan(basePackages = "com.team3") // 엔티티가 위치한 패키지
+@EntityScan(basePackages = "com.team3")
 @EnableJpaRepositories(basePackages = "com.team3")
 public class Team3BatchApplication {
     public static void main(String[] args) {
